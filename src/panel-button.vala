@@ -14,7 +14,9 @@ public class PanelButtonWindow : PanelAbstractWindow {
         menu_box = new PanelMenuBox();
         set_visual (this.screen.get_rgba_visual ());
 
-        set_size_request (28,28);
+        int width = 28;
+        int height = 28;
+        set_size_request (width, height);
 
         Gdk.RGBA c = Gdk.RGBA();
         c.red = 0.0;
@@ -39,7 +41,7 @@ public class PanelButtonWindow : PanelAbstractWindow {
         clock.show ();
 
         // SIGNALS
-        button_press_event.connect (() => {
+        button_release_event.connect ((event) => {
             if (menu_box.visible) {
                 // If menu_box is visible and showing first column, 
                 // then we want it to be closed when we got here.
@@ -59,12 +61,18 @@ public class PanelButtonWindow : PanelAbstractWindow {
 
                 // Close it otherwise
                 menu_box.hide ();
-            } else {
-                // Otherwise we want to show it
+
+                return true;
+            } else if (event.x >= 0 && event.y <= width &&
+                       event.y >= 0 && event.x <= height) {
+                // If mouse pointer is still hovering the icon,
+                // show the menu box
                 show_menu_box ();
+
+                return true;
             }
 
-           return true;
+            return false;
         });
 
         screen_size_changed.connect (() =>  {
